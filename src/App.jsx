@@ -1,40 +1,58 @@
-import React from 'react';
-import logo from './assets/react.svg';
-import './App.css';
+import styles from './app.module.css'
+import { useState } from 'react';
 
 export const App = () => {
-    const currentYear = new Date().getFullYear(); // Декларативный стиль
+	const [value, setValue] = useState('');
+	const [list, setList] = useState([]);
+	const [error, setError] = useState('');
+	const isValueVaild = value.length >= 3;
 
-    return React.createElement(
-        "div",
-        { className: "App" },
-        React.createElement(
-            "header",
-            { className: "App-header" },
-            React.createElement("img", { src: logo, className: "App-logo", alt: "logo" }),
-            React.createElement(
-                "p",
-                null,
-                "Edit ",
-                React.createElement("code", null, "src/App.js"),
-                " and save to reload 2."
-            ),
-            React.createElement(
-                "a",
-                {
-                    className: "App-link",
-                    href: "https://reactjs.org",
-                    target: "_blank",
-                    rel: "noopener noreferrer"
-                },
-                "Learn React"
-            ),
-			// Добавляем footer с текущим годом
-			React.createElement(
-				"footer",
-				null,
-				React.createElement("p", null, `Текущий год: ${currentYear}`)
-			)
-        )
-    );
+
+	const onInputButtonClick = () => {
+		let promptValue = prompt();
+		if (promptValue.length >= 3) {
+			setValue(promptValue);
+			setError('');
+		} else {
+			setError('Введенное значение должно содержать минимум 3 символа');
+		}
+
+	};
+
+	const onAddButtonClick = () => {
+		if (value) {
+			setList(list => [...list, {id : Date.now(), value : value }])
+			setValue('');
+			setError('');
+		} else {
+			console.log('1');
+		}
+	}
+
+	return (
+		<>
+		<div className={styles.app}>
+			<h1 className={styles['page-heading']}>Ввод значения</h1>
+			<p className={styles['no-margin-text']}>
+				Текущее значение value: &quot;<output className={styles.currentValue}>{value}</output>&quot;
+				</p>
+				{error !== '' && <div className={styles.error}>{error}</div>}
+				<div className={styles['buttons-container']}>
+					<button className={styles.button} onClick={onInputButtonClick}>Ввести новое</button>
+					<button className={styles.button} disabled={!isValueVaild} onClick={onAddButtonClick}>Добавить в список</button>
+				</div>
+				<div className={styles['list-container']}>
+					<h2 className={styles['list-heading']}>Список:</h2>
+					{list.length > 0 ?
+					(<ul className={styles['list']}>
+						{list.map((item) => (
+							<li className={styles['list-item']} key={item.id}>{item.value}</li>
+						))}
+					</ul>
+					) : (
+					<p className={styles['no-margin-text']}>Нет добавленных элементов</p>)}
+				</div>
+		</div>
+		</>
+	);
 };
